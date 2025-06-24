@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>
+        HTML Game
+    </title>
+    <style>
+        .gameTable tr td {
+            height: 25px !important;
+            width: 25px !important;
+        }
+
+        .gameTable tr td[state='unTouched'] {
+            background-color: chocolate;
+        }
+
+        .gameTable tr td[state='touched'] {
+            background-color: pink;
+        }
+
+        .gameTable tr td[state='invalid'] {
+            background-color: red;
+        }
+
+        .gameTable tr td[state='hotSpot'] {
+            background-color: orange;
+        }
+    </style>
+    <script>
+        let invalidCount = 0;
+        let startTime;
+        let timeString;
+        function loaded() {
+            let gz = document.getElementById("gameZone");
+            let newTable = document.createElement("table");
+            let newLable = document.createElement("label");
+            newLable.id = "timerLabel";
+            newTable.className = "gameTable";
+            for (let i = 1; i < 10; i++) {
+                let newTR = document.createElement('tr');
+                for (let j = 1; j < 10; j++) {
+                    let newTD = document.createElement('td');
+                    newTD.id = `${i},${j}`;  // optional: add cell content
+                    newTD.setAttribute('state', 'unTouched');
+                    newTD.addEventListener("click", () => {
+                        cellClicked(newTD);
+                    });
+                    newTR.appendChild(newTD);
+                }
+                newTable.appendChild(newTR);
+            }
+            gz.appendChild(newTable);
+            gz.appendChild(newLable);
+            nextHotSpot();
+            updateClock();
+            setInterval(updateClock, 100);
+        }
+        function cellClicked(cell) {
+            if (!startTime) {
+                startTime = new Date();
+            }
+            if (cell.attributes['state'].value == "hotSpot")
+                cell.setAttribute('state', 'touched');
+            else {
+                cell.setAttribute('state', 'invalid');
+                invalidCount++;
+            }
+            if (invalidCount > 2) {
+                alert("Sorry, You have failed!");
+                location.reload();
+            }
+            else {
+                nextHotSpot();
+            }
+        }
+        function nextHotSpot() {
+            unTouchedElements = document.querySelectorAll('.gameTable tr td[state="unTouched"]');
+
+            if (unTouchedElements.length == 0) {
+                alert(`Congrats, You have taken ${timeString}`);
+                location.reload();
+            }
+
+            var nextELement = getRandomInt(0, unTouchedElements.length - 1);
+
+
+
+            unTouchedElements[nextELement].setAttribute('state', 'hotSpot');
+
+        }
+        function getRandomInt(min, max) {
+            return Math.floor(Math.random() * (max - min + 1)) + min;
+        }
+
+        function updateClock() {
+
+            if (startTime) {
+                const now = new Date();
+                timeString = (now - startTime) / 1000;
+                document.getElementById('timerLabel').innerHTML = `Total time taken - ${timeString}`;
+            }
+        }
+
+        // Update clock immediately, then every second
+
+        window.onload = loaded;
+
+    </script>
+</head>
+
+<body>
+    <section id="gameZone">
+
+    </section>
+    <label id="timerLabel"></label>
+</body>
+
+</html>
