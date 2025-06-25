@@ -60,19 +60,19 @@
             if (!startTime) {
                 startTime = new Date();
             }
-            if (cell.attributes['state'].value == "hotSpot")
+            if (cell.attributes['state'].value == "hotSpot") {
                 cell.setAttribute('state', 'touched');
+                nextHotSpot();
+            }
             else {
                 cell.setAttribute('state', 'invalid');
                 invalidCount++;
+                if (invalidCount > 2) {
+                    alert("Sorry, You have failed!");
+                    location.reload();
+                }
             }
-            if (invalidCount > 2) {
-                alert("Sorry, You have failed!");
-                location.reload();
-            }
-            else {
-                nextHotSpot();
-            }
+
         }
         function nextHotSpot() {
             unTouchedElements = document.querySelectorAll('.gameTable tr td[state="unTouched"]');
